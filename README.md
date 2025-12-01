@@ -8,6 +8,7 @@ https://qiita.com/hiiragi_en17
 
 - [基本的なコマンド](#基本的なコマンド)
 - [記事管理ワークフロー](#記事管理ワークフロー)
+  - [画像の追加方法](#-画像の追加方法)
 - [注意点とベストプラクティス](#注意点とベストプラクティス)
 - [トラブルシューティング](#トラブルシューティング)
 
@@ -105,6 +106,92 @@ git add .
 git commit -m "sync: Qiitaから変更を同期"
 git push
 ```
+
+### 📸 画像の追加方法
+
+Qiita CLIには**公式の画像アップロード機能が含まれていません**。以下の方法で画像を記事に追加できます。
+
+#### 方法1: Qiitaエディタで直接アップロード（推奨）
+
+この方法が最も簡単で確実です。
+
+1. **ローカルで記事をマークダウンで作成**
+   ```markdown
+   # 記事タイトル
+
+   ![画像の説明](画像URL)  ← 一時的にプレースホルダーを入れておく
+   ```
+
+2. **GitHub Actions経由でQiitaに投稿**
+   ```bash
+   git add .
+   git commit -m "add: 新しい記事を追加"
+   git push
+   # mainブランチにマージすると、Qiitaに記事が下書きとして作成される
+   ```
+
+3. **Qiita上で画像をアップロード**
+   - Qiitaのエディタを開く
+   - 画像をドラッグ&ドロップ、またはクリップボードから貼り付け
+   - 自動的に画像URLが生成される
+   ```markdown
+   ![画像の説明](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/xxx/xxx.png)
+   ```
+
+4. **変更をローカルに同期**
+   ```bash
+   npx qiita pull
+   git add .
+   git commit -m "sync: 画像を追加"
+   git push
+   ```
+
+#### 方法2: 外部画像ホスティングサービスを使用
+
+外部サービスに画像をアップロードして、そのURLをマークダウンに直接記述する方法です。
+
+**推奨サービス:**
+- **Gyazo**: スクリーンショット共有に便利
+- **Imgur**: 汎用的な画像ホスティング
+- **Cloudinary**: 開発者向けの高機能な画像管理サービス
+
+```markdown
+![画像の説明](https://i.imgur.com/xxxxx.png)
+```
+
+#### 方法3: GitHubリポジトリに画像を保存
+
+リポジトリ内に画像を保存し、GitHubのrawコンテンツURLを使用する方法です。
+
+```bash
+# imagesディレクトリを作成
+mkdir -p images
+
+# 画像を配置
+cp path/to/image.png images/
+
+# マークダウンで参照
+![画像の説明](https://raw.githubusercontent.com/hiiragi17/qiita-content/main/images/image.png)
+```
+
+**注意点:**
+- この方法は画像が公開リポジトリに保存されます
+- 機密情報を含む画像には使用しないでください
+- Qiitaの月間アップロード制限（100MB）にカウントされません
+
+#### 画像アップロードの制限
+
+Qiitaには以下の制限があります：
+- **月間アップロード上限**: 100MB
+- **画像の上書き**: 不可（新規アップロードのみ）
+
+制限に達した場合の対処法：
+1. 外部画像ホスティングサービスを使用
+2. Qiitaサポートに連絡して古い画像を削除依頼
+
+**参考リンク:**
+- [画像のアップロード・削除方法 | Qiita ヘルプ](https://help.qiita.com/ja/articles/qiita-image-upload)
+- [Qiitaの記事に画像を貼る](https://qiita.com/sitaya/items/d27bd286c3cda5332b8c)
 
 ## 注意点とベストプラクティス
 
